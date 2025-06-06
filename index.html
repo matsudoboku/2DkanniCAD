@@ -665,6 +665,7 @@ document.getElementById('clearBtn').onclick = () => {
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
+    e.preventDefault();
   if((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0)){
     isDragging = true;
     let t = e.touches[0];
@@ -679,6 +680,7 @@ canvas.addEventListener('touchstart', (e)=>{
   }
 });
 canvas.addEventListener('touchmove', (e)=>{
+  e.preventDefault();
   if(isDragging && multiMoveStartPositions){
     let t = e.touches[0];
     const rect = canvas.getBoundingClientRect();
@@ -704,6 +706,7 @@ canvas.addEventListener('touchmove', (e)=>{
   }
 });
 canvas.addEventListener('touchend', (e)=>{
+ e.preventDefault();
   if(isDragging && multiMoveStartPositions){
     saveState();
     isDragging=false; multiMoveStartPositions = null;
@@ -760,7 +763,7 @@ canvas.addEventListener('mouseup', (e)=>{
 function distToSegment(px,py,x1,y1,x2,y2){
   const l2 = (x2-x1)**2+(y2-y1)**2;
   if(l2===0) return Math.hypot(px-x1,py-y1);
-  let t = ((px-x1)*(x2-x1)+(py-y1)*(x2-x1)+(py-y1)*(y2-y1))/l2;
+  let t = ((px-x1)*(x2-x1)+(py-y1)*(y2-y1))/l2;
   t = Math.max(0,Math.min(1,t));
   const nx = x1+t*(x2-x1);
   const ny = y1+t*(y2-y1);
