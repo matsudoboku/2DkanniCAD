@@ -665,8 +665,8 @@ document.getElementById('clearBtn').onclick = () => {
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
-    e.preventDefault();
   if((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0)){
+    e.preventDefault();
     isDragging = true;
     let t = e.touches[0];
     const rect = canvas.getBoundingClientRect();
@@ -678,10 +678,10 @@ canvas.addEventListener('touchstart', (e)=>{
       if(sel.type==="ref") return {type:"ref", idx:sel.idx, ...refPoints[sel.idx]};
     });
   }
-});
+}, {passive:false});
 canvas.addEventListener('touchmove', (e)=>{
-  e.preventDefault();
   if(isDragging && multiMoveStartPositions){
+    e.preventDefault();
     let t = e.touches[0];
     const rect = canvas.getBoundingClientRect();
     const mx = t.clientX - rect.left, my = t.clientY - rect.top;
@@ -704,16 +704,24 @@ canvas.addEventListener('touchmove', (e)=>{
     });
     redraw();
   }
-});
+}, {passive:false});
 canvas.addEventListener('touchend', (e)=>{
- e.preventDefault();
   if(isDragging && multiMoveStartPositions){
+    e.preventDefault();
     saveState();
     isDragging=false; multiMoveStartPositions = null;
     redraw();
+      } else {
+    // synthesize a click for taps
+    let t = e.changedTouches[0];
+    const clickEvent = new MouseEvent('click', {
+      bubbles: true,
+      clientX: t.clientX,
+      clientY: t.clientY
+    });
+    canvas.dispatchEvent(clickEvent);
   }
-});
-
+}, {passive:false});
 // --- 複数選択移動: マウス ---
 canvas.addEventListener('mousedown', (e)=>{
   if((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0)){
