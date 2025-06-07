@@ -726,7 +726,6 @@ canvas.addEventListener('touchmove', (e)=>{
     e.preventDefault();
     let t = e.touches[0];
     const {x: mx, y: my} = getCanvasPoint(t.clientX, t.clientY);
-    const mx = t.clientX - rect.left, my = t.clientY - rect.top;
     const dx = mx - dragStart.x, dy = my - dragStart.y;
     multiMoveStartPositions.forEach((item,i)=>{
       if(item.type==="line"){
