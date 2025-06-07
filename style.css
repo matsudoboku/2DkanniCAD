@@ -29,6 +29,7 @@
     #modalBox button{font-size:1em;padding:4px 13px;border-radius:6px;border:none;}
     #modalBox .ok{background:#ffd600;color:#222;font-weight:bold;}
     #modalBox .cancel{background:#eee;color:#222;}
+    #statusBar {position:fixed;bottom:0;left:0;width:100%;background:#444;color:#fff;font-size:13px;padding:4px 8px;box-sizing:border-box;z-index:1;}
     .selected-highlight { box-shadow: 0 0 0 3px #ffd60066; }
     @media (max-width: 720px) {
       #toolbar .btn, #toolbar .icon-btn, #toolbar .select-scale { font-size: 12px; min-width:32px; padding:7px 2px;}
