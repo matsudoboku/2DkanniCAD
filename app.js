@@ -733,3 +733,17 @@ document.addEventListener('keydown', e=>{
   if(e.ctrlKey && e.key==="z") document.getElementById('undoBtn').click();
   if(e.ctrlKey && e.key==="y") document.getElementById('redoBtn').click();
 });
+
+const statusBar = document.getElementById('statusBar');
+function updateStatusBar(e){
+  let p;
+  if(e.touches && e.touches.length){
+    const t = e.touches[0];
+    p = getCanvasPoint(t.clientX, t.clientY);
+  } else {
+    p = getCanvasPoint(e.clientX, e.clientY);
+  }
+  statusBar.textContent = `x: ${p.x.toFixed(1)}  y: ${p.y.toFixed(1)}`;
+}
+canvas.addEventListener('mousemove', updateStatusBar);
+canvas.addEventListener('touchmove', updateStatusBar, {passive:true});
