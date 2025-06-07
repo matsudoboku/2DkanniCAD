@@ -22,7 +22,7 @@
     #toolbar .icon-btn { font-size: 18px; background: #222; color: #ffd600; width: 32px; height: 32px; padding:0;}
     .mode-btn-on { background: #ffd600 !important; color: #222 !important; }
     .select-scale { font-size: 13px; min-width:56px; padding:4px 6px;}
-    #canvas { background: #111; touch-action: none; width: 100vw; height: 67vh; display: block;}
+    #canvas { background: #111; touch-action: none; width: 100vw; height: 67vh; display: block; transform-origin: 0 0;}
     .tab-group { display: none; width:100vw;}
     .tab-group.tab-active { display:flex; flex-wrap:wrap; }
     #toolbar label { margin-right:10px;}
@@ -116,6 +116,12 @@ let ignoreStateSave = false;
 let bisectLineSelectPt = null;
 let multiSelectMode = false;
 let selectedItems = [];
+let zoom = 1;
+
+function getCanvasPoint(clientX, clientY){
+  const rect = canvas.getBoundingClientRect();
+  return {x:(clientX - rect.left)/zoom, y:(clientY - rect.top)/zoom};
+}
 
 const tabBtns = [
   {btn:"tabDraw", grp:"drawGroup"},
@@ -201,6 +207,42 @@ function resizeCanvas() {
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
+
+  canvas.addEventListener('wheel', e=>{
+  e.preventDefault();
+  const factor = e.deltaY < 0 ? 1.1 : 0.9;
+  zoom = Math.min(3, Math.max(0.5, zoom * factor));
+  canvas.style.transform = `scale(${zoom})`;
+}, {passive:false});
+
+let pinchStartDist = null;
+canvas.addEventListener('touchstart', e=>{
+  if(e.touches.length===2){
+    e.preventDefault();
+    pinchStartDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+  }
+},{passive:false});
+canvas.addEventListener('touchmove', e=>{
+  if(pinchStartDist && e.touches.length===2){
+    e.preventDefault();
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    );
+    const factor = dist / pinchStartDist;
+    zoom = Math.min(3, Math.max(0.5, zoom * factor));
+    pinchStartDist = dist;
+    canvas.style.transform = `scale(${zoom})`;
+  }
+},{passive:false});
+canvas.addEventListener('touchend', e=>{
+  if(e.touches.length<2){
+    pinchStartDist = null;
+  }
+},{passive:false});
 
 document.getElementById('multiSelectBtn').onclick = () => {
   multiSelectMode = !multiSelectMode;
@@ -359,8 +401,7 @@ document.getElementById('editLineBtn').onclick = () => {
 };
 
 canvas.addEventListener('click', (e) => {
-  const rect = canvas.getBoundingClientRect();
-  const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+const {x: cx, y: cy} = getCanvasPoint(e.clientX, e.clientY);
 
   if(multiSelectMode){
     let found = false;
@@ -593,8 +634,8 @@ canvas.addEventListener('click', (e) => {
 
 function showTextInput(x, y) {
   let input = document.getElementById('textInput');
-  input.style.left = x + "px";
-  input.style.top = y + "px";
+  input.style.left = (x * zoom) + "px";
+  input.style.top = (y * zoom) + "px";
   input.style.display = "block";
   input.value = "";
   input.focus();
@@ -668,12 +709,10 @@ clearBtn.addEventListener('touchstart', clearHandler, {passive:false});
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
-  if((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0)){
-    e.preventDefault();
+  if(e.touches.length===1 && ((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0))){    e.preventDefault();
     isDragging = true;
     let t = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
-    dragStart = {x: t.clientX - rect.left, y: t.clientY - rect.top};
+    dragStart = getCanvasPoint(t.clientX, t.clientY);
     multiMoveStartPositions = selectedItems.map(sel=>{
       if(sel.type==="line") return {type:"line", idx:sel.idx, ...lines[sel.idx]};
       if(sel.type==="dim") return {type:"dim", idx:sel.idx, ...dims[sel.idx]};
@@ -683,10 +722,10 @@ canvas.addEventListener('touchstart', (e)=>{
   }
 }, {passive:false});
 canvas.addEventListener('touchmove', (e)=>{
-  if(isDragging && multiMoveStartPositions){
+  if(isDragging && multiMoveStartPositions && e.touches.length===1){
     e.preventDefault();
     let t = e.touches[0];
-    const rect = canvas.getBoundingClientRect();
+    const {x: mx, y: my} = getCanvasPoint(t.clientX, t.clientY);
     const mx = t.clientX - rect.left, my = t.clientY - rect.top;
     const dx = mx - dragStart.x, dy = my - dragStart.y;
     multiMoveStartPositions.forEach((item,i)=>{
@@ -729,8 +768,7 @@ canvas.addEventListener('touchend', (e)=>{
 canvas.addEventListener('mousedown', (e)=>{
   if((mode==="move" && selectedItems.length>0) || (multiSelectMode && selectedItems.length>0)){
     isDragging = true;
-    const rect = canvas.getBoundingClientRect();
-    dragStart = {x: e.clientX - rect.left, y: e.clientY - rect.top};
+    dragStart = getCanvasPoint(e.clientX, e.clientY);
     multiMoveStartPositions = selectedItems.map(sel=>{
       if(sel.type==="line") return {type:"line", idx:sel.idx, ...lines[sel.idx]};
       if(sel.type==="dim") return {type:"dim", idx:sel.idx, ...dims[sel.idx]};
@@ -741,8 +779,7 @@ canvas.addEventListener('mousedown', (e)=>{
 });
 canvas.addEventListener('mousemove', (e)=>{
   if(isDragging && multiMoveStartPositions){
-    const rect = canvas.getBoundingClientRect();
-    const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+    const {x: mx, y: my} = getCanvasPoint(e.clientX, e.clientY);
     const dx = mx - dragStart.x, dy = my - dragStart.y;
     multiMoveStartPositions.forEach((item,i)=>{
       if(item.type==="line"){
