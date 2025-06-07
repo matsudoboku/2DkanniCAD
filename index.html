@@ -7,13 +7,15 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="workspace">
   <!-- タブ -->
-  <div id="tabs">
-    <button id="tabDraw" class="tab-btn tab-on">描画</button>
-    <button id="tabEdit" class="tab-btn">編集</button>
-    <button id="tabDim" class="tab-btn">注記・寸法</button>
-    <button id="tabFile" class="tab-btn">ファイル</button>
-  </div>
+  <div id="controls">
+    <div id="tabs">
+      <button id="tabDraw" class="tab-btn tab-on">描画</button>
+      <button id="tabEdit" class="tab-btn">編集</button>
+      <button id="tabDim" class="tab-btn">注記・寸法</button>
+      <button id="tabFile" class="tab-btn">ファイル</button>
+    </div>
   <!-- ツールバー：戻る・進むは共通で左端に常時表示 -->
   <div id="toolbar">
     <button class="icon-btn" id="undoBtn" title="戻る">&#8630;</button>
@@ -53,9 +55,12 @@
     <div id="fileGroup" class="tab-group">
       <button class="btn" id="dxfBtn">DXF出力</button>
       <button class="btn" id="clearBtn">全消去</button>
+      <button class="btn" id="toggleLayoutBtn">縦ツールバー</button>
     </div>
   </div>
+  </div>
   <canvas id="canvas"></canvas>
+  </div>
   <a id="dxfDownload"></a>
   <input type="text" id="textInput">
   <div id="modalBg"><div id="modalBox"></div></div>
