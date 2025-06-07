@@ -108,7 +108,12 @@ function resizeCanvas() {
 }
 
 function updateZoom(){
-  const baseWidth = window.innerWidth;
+  let sideWidth = 0;
+  if(document.body.classList.contains('vertical-toolbar')){
+    const controls = document.getElementById('controls');
+    sideWidth = controls ? controls.offsetWidth : 0;
+  }
+  const baseWidth = window.innerWidth - sideWidth;
   const baseHeight = window.innerHeight * 0.9;
   canvas.width = baseWidth / zoom;
   canvas.height = baseHeight / zoom;
@@ -617,6 +622,11 @@ document.getElementById('dxfBtn').onclick = () => {
 };
 clearBtn.addEventListener('click', clearHandler);
 clearBtn.addEventListener('touchstart', clearHandler, {passive:false});
+
+document.getElementById('toggleLayoutBtn').onclick = () => {
+  document.body.classList.toggle('vertical-toolbar');
+  resizeCanvas();
+};
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
