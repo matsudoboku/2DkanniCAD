@@ -649,7 +649,9 @@ document.getElementById('dxfBtn').onclick = () => {
   setTimeout(()=>{URL.revokeObjectURL(url);a.style.display="none";},1000);
 };
 
-document.getElementById('clearBtn').onclick = () => {
+  const clearBtn = document.getElementById('clearBtn');
+  const clearHandler = (e) => {
+  e.preventDefault();
   if(confirm("すべての要素を削除します。よろしいですか？")){
     saveState();
     lines = []; endpoints = []; texts = [];
@@ -661,7 +663,8 @@ document.getElementById('clearBtn').onclick = () => {
     document.getElementById('addLineBtn').disabled = true;
   }
 };
-
+clearBtn.addEventListener('click', clearHandler);
+clearBtn.addEventListener('touchstart', clearHandler, {passive:false});
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
