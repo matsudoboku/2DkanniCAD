@@ -201,9 +201,18 @@ function setMode(m) {
   redraw();
 }
 function resizeCanvas() {
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight * 0.67;
+  updateZoom();
   redraw();
+}
+
+function updateZoom(){
+  const baseWidth = window.innerWidth;
+  const baseHeight = window.innerHeight * 0.67;
+  canvas.width = baseWidth / zoom;
+  canvas.height = baseHeight / zoom;
+  canvas.style.width = `${baseWidth}px`;
+  canvas.style.height = `${baseHeight}px`;
+  canvas.style.transform = `scale(${zoom})`;
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
@@ -212,7 +221,7 @@ resizeCanvas();
   e.preventDefault();
   const factor = e.deltaY < 0 ? 1.1 : 0.9;
   zoom = Math.min(3, Math.max(0.5, zoom * factor));
-  canvas.style.transform = `scale(${zoom})`;
+  updateZoom();
 }, {passive:false});
 
 let pinchStartDist = null;
@@ -235,7 +244,7 @@ canvas.addEventListener('touchmove', e=>{
     const factor = dist / pinchStartDist;
     zoom = Math.min(3, Math.max(0.5, zoom * factor));
     pinchStartDist = dist;
-    canvas.style.transform = `scale(${zoom})`;
+   updateZoom();
   }
 },{passive:false});
 canvas.addEventListener('touchend', e=>{
