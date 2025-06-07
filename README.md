@@ -14,8 +14,6 @@ The look and placement of these elements are defined by the CSS styles in the sa
 
 ## Adapting the Layout
 
-You can tailor the interface to mimic other styles such as "v-nas" by adjusting the HTML/CSS. Examples of customisations include:
-
 - Moving the toolbar vertically to the side of the canvas.
 - Adding a bottom status bar to display coordinates or messages.
 - Changing the colour scheme to match your preferred palette.
