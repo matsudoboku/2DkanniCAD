@@ -48,8 +48,9 @@ function resizeCanvas() {
 }
 
 function updateZoom(){
-  const baseWidth = window.innerWidth;
-  const baseHeight = window.innerHeight * 0.9;
+  const rect = canvas.getBoundingClientRect();
+  const baseWidth = rect.width;
+  const baseHeight = rect.height;
   canvas.width = baseWidth / zoom;
   canvas.height = baseHeight / zoom;
   canvas.style.width = `${baseWidth}px`;
