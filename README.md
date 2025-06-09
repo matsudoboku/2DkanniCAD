@@ -19,3 +19,18 @@ The look and placement of these elements are defined by the CSS styles in the sa
 - Changing the colour scheme to match your preferred palette.
 
 Editing the markup or styles allows you to arrange the controls in any configuration that suits your workflow.
+
+## React + Vite Client (Prototype)
+
+A new prototype client using React, TypeScript and Vite lives in the `client/` directory. It sets up
+basic state management with Redux Toolkit and a Konva based canvas component.
+
+To develop locally make sure Node.js is installed and run:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The application will be available at `http://localhost:5173` by default.
