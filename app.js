@@ -105,9 +105,8 @@ function setMode(m) {
 let baseWidth = 0, baseHeight = 0;
 
 function resizeCanvas() {
-　const rect = canvas.getBoundingClientRect();
-  baseWidth = rect.width;
-  baseHeight = rect.height;
+  baseWidth = window.innerWidth;
+  baseHeight = window.innerHeight * 0.9; // match CSS 90vh
   updateZoom();
   redraw();
 }
@@ -115,9 +114,15 @@ function resizeCanvas() {
 function updateZoom(){
   canvas.width = baseWidth / zoom;
   canvas.height = baseHeight / zoom;
-  canvas.style.width = `${baseWidth}px`;
-  canvas.style.height = `${baseHeight}px`;
-  canvas.style.transform = `scale(${zoom})`;
+  if(zoom < 1){
+    canvas.style.width = `${baseWidth / zoom}px`;
+    canvas.style.height = `${baseHeight / zoom}px`;
+    canvas.style.transform = "scale(1)";
+  } else {
+    canvas.style.width = `${baseWidth}px`;
+    canvas.style.height = `${baseHeight}px`;
+    canvas.style.transform = `scale(${zoom})`;
+  }
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
