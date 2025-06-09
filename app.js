@@ -102,15 +102,17 @@ function setMode(m) {
   if(mode!=="trap") trapSelectPts=[];
   redraw();
 }
+let baseWidth = 0, baseHeight = 0;
+
 function resizeCanvas() {
+　const rect = canvas.getBoundingClientRect();
+  baseWidth = rect.width;
+  baseHeight = rect.height;
   updateZoom();
   redraw();
 }
 
 function updateZoom(){
-  const rect = canvas.getBoundingClientRect();
-  const baseWidth = rect.width;
-  const baseHeight = rect.height;
   canvas.width = baseWidth / zoom;
   canvas.height = baseHeight / zoom;
   canvas.style.width = `${baseWidth}px`;
