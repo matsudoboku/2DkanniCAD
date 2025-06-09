@@ -43,19 +43,24 @@ tabBtns.forEach(({btn, grp}) => {
   redraw();
 }
 function resizeCanvas() {
+  baseWidth = window.innerWidth;
+  baseHeight = window.innerHeight * 0.9; // match CSS 90vh
   updateZoom();
   redraw();
 }
 
 function updateZoom(){
-  const rect = canvas.getBoundingClientRect();
-  const baseWidth = rect.width;
-  const baseHeight = rect.height;
   canvas.width = baseWidth / zoom;
   canvas.height = baseHeight / zoom;
-  canvas.style.width = `${baseWidth}px`;
-  canvas.style.height = `${baseHeight}px`;
-  canvas.style.transform = `scale(${zoom})`;
+  if(zoom < 1){
+    canvas.style.width = `${baseWidth / zoom}px`;
+    canvas.style.height = `${baseHeight / zoom}px`;
+    canvas.style.transform = "scale(1)";
+  } else {
+    canvas.style.width = `${baseWidth}px`;
+    canvas.style.height = `${baseHeight}px`;
+    canvas.style.transform = `scale(${zoom})`;
+  }
 }
 window.addEventListener('resize', resizeCanvas);
 resizeCanvas();
