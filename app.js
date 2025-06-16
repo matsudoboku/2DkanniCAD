@@ -405,11 +405,8 @@ const {x: cx, y: cy} = getCanvasPoint(e.clientX, e.clientY);
       startPt = {x:x2, y:y2};
       redraw();
     });
-    const ix = document.getElementById('coordX');
-    const iy = document.getElementById('coordY');
-    ix.value = '';
-    iy.value = '';
-    ix.focus();
+    }, true);
+
     setMode('line');
     return;
   }
@@ -567,24 +564,33 @@ function showTextInput(x, y) {
   };
 }
 
-function showCoordInput(x, y, onOk){
+function showCoordInput(x, y, onOk, blank=false){
   const box = document.getElementById('coordInput');
+　const iu = document.getElementById('coordUnit');
   const ix = document.getElementById('coordX');
   const iy = document.getElementById('coordY');
   const ok = document.getElementById('coordOk');
   box.style.left = (x * zoom) + 'px';
   box.style.top = (y * zoom) + 'px';
   box.style.display = 'block';
-  ix.value = x.toFixed(1);
-  iy.value = y.toFixed(1);
+  if(blank){
+    ix.value = '';
+    iy.value = '';
+  }else{
+    ix.value = x.toFixed(1);
+    iy.value = y.toFixed(1);
+  }
+  iu.value = 'm';
   ix.focus();
   function finish(){
     box.style.display = 'none';
     ok.removeEventListener('click', finish);
     ix.removeEventListener('keydown', keyHandler);
     iy.removeEventListener('keydown', keyHandler);
-    const vx = parseFloat(ix.value);
-    const vy = parseFloat(iy.value);
+    const unit = iu.value;
+    let vx = parseFloat(ix.value);
+    let vy = parseFloat(iy.value);
+    if(unit === 'cm'){ vx /= 100; vy /= 100; }
     if(!isNaN(vx) && !isNaN(vy)) onOk(vx, vy);
   }
   function keyHandler(e){ if(e.key==='Enter') finish(); }
