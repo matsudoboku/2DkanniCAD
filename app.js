@@ -32,12 +32,15 @@ const tabBtns = [
   {btn:"tabFile", grp:"fileGroup"},
 ];
 tabBtns.forEach(({btn, grp}) => {
-  document.getElementById(btn).onclick = () => {
+  const handler = () => {
     tabBtns.forEach(({btn:bid, grp:gid})=>{
       document.getElementById(bid).classList.toggle('tab-on', btn===bid);
       document.getElementById(gid).classList.toggle('tab-active', grp===gid);
     });
-  }
+  };
+  const el = document.getElementById(btn);
+  el.addEventListener('click', handler);
+  el.addEventListener('touchstart', handler, {passive: true});
 });
 
 function saveState() {
@@ -63,18 +66,25 @@ function restoreState(obj) {
   redraw();
   ignoreStateSave = false;
 }
-document.getElementById('undoBtn').onclick = () => {
+const undoHandler = () => {
   if(undoStack.length===0) return;
   redoStack.push(JSON.stringify({lines, texts, dims, refPoints}));
   const prev = JSON.parse(undoStack.pop());
   restoreState(prev);
 };
-document.getElementById('redoBtn').onclick = () => {
-  if(redoStack.length===0) return;
+const undoBtn = document.getElementById('undoBtn');
+undoBtn.addEventListener('click', undoHandler);
+undoBtn.addEventListener('touchstart', undoHandler, {passive:true});
+
+const redoHandler = () => {
+   if(redoStack.length===0) return;
   undoStack.push(JSON.stringify({lines, texts, dims, refPoints}));
   const next = JSON.parse(redoStack.pop());
   restoreState(next);
 };
+const redoBtn = document.getElementById('redoBtn');
+redoBtn.addEventListener('click', redoHandler);
+redoBtn.addEventListener('touchstart', redoHandler, {passive:true});
 
 function setMode(m) {
   mode = m;
@@ -163,11 +173,14 @@ canvas.addEventListener('touchend', e=>{
   }
 },{passive:false});
 
-document.getElementById('multiSelectBtn').onclick = () => {
+const multiSelectHandler = () => {
   multiSelectMode = !multiSelectMode;
   if(!multiSelectMode) selectedItems = [];
   setMode(mode);
 };
+const multiSelectBtn = document.getElementById('multiSelectBtn');
+multiSelectBtn.addEventListener('click', multiSelectHandler);
+multiSelectBtn.addEventListener('touchstart', multiSelectHandler, {passive:true});
 
 function redraw() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -261,11 +274,14 @@ document.getElementById('scaleSelect').addEventListener('change', function() {
   redraw();
 });
 
-document.getElementById('addLineBtn').onclick = () => {
+const addLineHandler = () => {
   if (!startPt) return;
   saveState();
   setMode('addline');
 };
+const addLineBtn = document.getElementById('addLineBtn');
+addLineBtn.addEventListener('click', addLineHandler);
+addLineBtn.addEventListener('touchstart', addLineHandler, {passive:true});
 
 function getNearestKeyPoint(cx, cy){
   let pts = [...endpoints, ...midpoints, ...refPoints];
@@ -300,14 +316,20 @@ function showModal(html, onOK, onCancel) {
   }
 }
 // 両側線
-document.getElementById('bisectLineBtn').onclick = () => {
+const bisectLineHandler = () => {
   setMode("bisectline");
   bisectLineSelectPt = null;
 };
+const bisectLineBtn = document.getElementById('bisectLineBtn');
+bisectLineBtn.addEventListener('click', bisectLineHandler);
+bisectLineBtn.addEventListener('touchstart', bisectLineHandler, {passive:true});
 // 線端延長/縮小
-document.getElementById('editLineBtn').onclick = () => {
+const editLineHandler = () => {
   setMode("editline");
 };
+const editLineBtn = document.getElementById('editLineBtn');
+editLineBtn.addEventListener('click', editLineHandler);
+editLineBtn.addEventListener('touchstart', editLineHandler, {passive:true});
 
 canvas.addEventListener('click', (e) => {
 const {x: cx, y: cy} = getCanvasPoint(e.clientX, e.clientY);
@@ -598,15 +620,42 @@ function showCoordInput(x, y, onOk, blank=false){
   ix.addEventListener('keydown', keyHandler);
   iy.addEventListener('keydown', keyHandler);
 }
-document.getElementById('addTextBtn').onclick = () => setMode("text");
-document.getElementById('moveBtn').onclick = () => setMode((mode==="move")?"line":"move");
-document.getElementById('deleteBtn').onclick = () => setMode((mode==="delete")?"line":"delete");
-document.getElementById('dimBtn').onclick = () => setMode((mode==="dim")?"line":"dim");
-document.getElementById('refBtn').onclick = () => setMode((mode==="ref")?"line":"ref");
-document.getElementById('twoptBtn').onclick = () => setMode((mode==="twopt")?"line":"twopt");
-document.getElementById('trapBtn').onclick = () => setMode((mode==="trap")?"line":"trap");
+const addTextBtn = document.getElementById('addTextBtn');
+const addTextHandler = () => setMode("text");
+addTextBtn.addEventListener('click', addTextHandler);
+addTextBtn.addEventListener('touchstart', addTextHandler, {passive:true});
 
-document.getElementById('dxfBtn').onclick = () => {
+const moveBtn = document.getElementById('moveBtn');
+const moveHandler = () => setMode((mode==="move")?"line":"move");
+moveBtn.addEventListener('click', moveHandler);
+moveBtn.addEventListener('touchstart', moveHandler, {passive:true});
+
+const deleteBtn = document.getElementById('deleteBtn');
+const deleteHandler = () => setMode((mode==="delete")?"line":"delete");
+deleteBtn.addEventListener('click', deleteHandler);
+deleteBtn.addEventListener('touchstart', deleteHandler, {passive:true});
+
+const dimBtn = document.getElementById('dimBtn');
+const dimHandler = () => setMode((mode==="dim")?"line":"dim");
+dimBtn.addEventListener('click', dimHandler);
+dimBtn.addEventListener('touchstart', dimHandler, {passive:true});
+
+const refBtn = document.getElementById('refBtn');
+const refHandler = () => setMode((mode==="ref")?"line":"ref");
+refBtn.addEventListener('click', refHandler);
+refBtn.addEventListener('touchstart', refHandler, {passive:true});
+
+const twoptBtn = document.getElementById('twoptBtn');
+const twoptHandler = () => setMode((mode==="twopt")?"line":"twopt");
+twoptBtn.addEventListener('click', twoptHandler);
+twoptBtn.addEventListener('touchstart', twoptHandler, {passive:true});
+
+const trapBtn = document.getElementById('trapBtn');
+const trapHandler = () => setMode((mode==="trap")?"line":"trap");
+trapBtn.addEventListener('click', trapHandler);
+trapBtn.addEventListener('touchstart', trapHandler, {passive:true});
+
+const dxfHandler = () => {
   let dxf = [];
   dxf.push("0\nSECTION\n2\nHEADER\n0\nENDSEC\n0\nSECTION\n2\nENTITIES");
   lines.forEach(l=>{
@@ -638,6 +687,9 @@ document.getElementById('dxfBtn').onclick = () => {
   a.click();
   setTimeout(()=>{URL.revokeObjectURL(url);a.style.display="none";},1000);
 };
+const dxfBtn = document.getElementById('dxfBtn');
+dxfBtn.addEventListener('click', dxfHandler);
+dxfBtn.addEventListener('touchstart', dxfHandler, {passive:true});
 
   const clearBtn = document.getElementById('clearBtn');
   const clearHandler = (e) => {
@@ -656,10 +708,13 @@ document.getElementById('dxfBtn').onclick = () => {
 clearBtn.addEventListener('click', clearHandler);
 clearBtn.addEventListener('touchstart', clearHandler, {passive:false});
 
-document.getElementById('toggleLayoutBtn').onclick = () => {
+const toggleLayoutHandler = () => {
   document.body.classList.toggle('vertical-toolbar');
   resizeCanvas();
 };
+const toggleLayoutBtn = document.getElementById('toggleLayoutBtn');
+toggleLayoutBtn.addEventListener('click', toggleLayoutHandler);
+toggleLayoutBtn.addEventListener('touchstart', toggleLayoutHandler, {passive:true});
 // --- 複数選択移動: タッチ ---
 let multiMoveStartPositions = null;
 canvas.addEventListener('touchstart', (e)=>{
