@@ -23,6 +23,7 @@
     #textInput {position:absolute;display:none;z-index:10;font-size:16px;padding:4px;}
     #coordInput {position:absolute;display:none;z-index:10;background:#fff;padding:4px;border-radius:6px;box-shadow:0 2px 8px #0005;}
     #coordInput input{width:60px;margin-right:4px;font-size:16px;}
+    #coordInput select{margin-right:4px;font-size:16px;}
     #coordInput button{padding:2px 8px;font-size:14px;}
     #modalBg { display:none; position:fixed;z-index:21;left:0;top:0;width:100vw;height:100vh;background:rgba(0,0,0,0.32);align-items:center;justify-content:center;}
     #modalBox { background:#fff;color:#222;padding:13px 10px 8px 10px;border-radius:10px;min-width:200px;box-shadow:0 4px 20px #0005;display:flex;flex-direction:column;gap:8px;}
