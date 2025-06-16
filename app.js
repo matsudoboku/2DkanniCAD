@@ -530,25 +530,15 @@ const {x: cx, y: cy} = getCanvasPoint(e.clientX, e.clientY);
     }
     return;
   }
-  let found = false;
-  for (const pt of endpoints) {
-    if (Math.hypot(pt.x - cx, pt.y - cy) < 15) {
-      startPt = {x: pt.x, y: pt.y}; found = true; break;
+  showCoordInput(cx, cy, (nx, ny) => {
+    if(startPt){
+      saveState();
+      lines.push({x1:startPt.x, y1:startPt.y, x2:nx, y2:ny});
     }
-  }
-  if(!found){
-    for(const mp of midpoints){
-      if(Math.hypot(mp.x-cx, mp.y-cy)<15){ startPt={x:mp.x,y:mp.y}; found=true; break; }
-    }
-  }
-  if(!found){
-    for(const ref of refPoints){
-      if(Math.hypot(ref.x-cx,ref.y-cy)<15){ startPt={x:ref.x,y:ref.y}; found=true; break;}
-    }
-  }
-  if (!found) { startPt = {x: cx, y: cy}; }
-  document.getElementById('addLineBtn').disabled = false;
-  redraw();
+    startPt = {x:nx, y:ny};
+    document.getElementById('addLineBtn').disabled = false;
+    redraw();
+  });
 });
 
 function showTextInput(x, y) {
@@ -567,6 +557,32 @@ function showTextInput(x, y) {
     input.style.display="none";
     setMode("line");
   };
+}
+
+function showCoordInput(x, y, onOk){
+  const box = document.getElementById('coordInput');
+  const ix = document.getElementById('coordX');
+  const iy = document.getElementById('coordY');
+  const ok = document.getElementById('coordOk');
+  box.style.left = (x * zoom) + 'px';
+  box.style.top = (y * zoom) + 'px';
+  box.style.display = 'block';
+  ix.value = x.toFixed(1);
+  iy.value = y.toFixed(1);
+  ix.focus();
+  function finish(){
+    box.style.display = 'none';
+    ok.removeEventListener('click', finish);
+    ix.removeEventListener('keydown', keyHandler);
+    iy.removeEventListener('keydown', keyHandler);
+    const vx = parseFloat(ix.value);
+    const vy = parseFloat(iy.value);
+    if(!isNaN(vx) && !isNaN(vy)) onOk(vx, vy);
+  }
+  function keyHandler(e){ if(e.key==='Enter') finish(); }
+  ok.addEventListener('click', finish);
+  ix.addEventListener('keydown', keyHandler);
+  iy.addEventListener('keydown', keyHandler);
 }
 document.getElementById('addTextBtn').onclick = () => setMode("text");
 document.getElementById('moveBtn').onclick = () => setMode((mode==="move")?"line":"move");
