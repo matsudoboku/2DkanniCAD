@@ -1,7 +1,7 @@
 import React from 'react';
 import { Stage, Layer, Line as KonvaLine } from 'react-konva';
 import { useSelector } from 'react-redux';
-import type { RootState } from '../store';
+import type { RootState } from '../../../store';
 
 export function Canvas() {
   const lines = useSelector((state: RootState) => state.drawing.lines);
