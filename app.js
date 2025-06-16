@@ -264,17 +264,7 @@ document.getElementById('scaleSelect').addEventListener('change', function() {
 document.getElementById('addLineBtn').onclick = () => {
   if (!startPt) return;
   saveState();
-  const dxEl = document.getElementById('dx');
-  const dyEl = document.getElementById('dy');
-  const dx = parseFloat(dxEl.value) || 0;
-  const dy = parseFloat(dyEl.value) || 0;
-  const x2 = startPt.x + dx * SCALE;
-  const y2 = startPt.y - dy * SCALE;
-  lines.push({ x1: startPt.x, y1: startPt.y, x2, y2 });
-  startPt = { x: x2, y: y2 };
-  dxEl.value = '';
-  dyEl.value = '';
-  redraw();
+  setMode('addline');
 };
 
 function getNearestKeyPoint(cx, cy){
@@ -403,6 +393,24 @@ const {x: cx, y: cy} = getCanvasPoint(e.clientX, e.clientY);
       redraw();
     });
     setMode("line");
+    return;
+  }
+
+   if(mode==="addline"){
+    showCoordInput(cx, cy, (dx, dy) => {
+      saveState();
+      const x2 = startPt.x + dx * SCALE;
+      const y2 = startPt.y - dy * SCALE;
+      lines.push({x1:startPt.x, y1:startPt.y, x2, y2});
+      startPt = {x:x2, y:y2};
+      redraw();
+    });
+    const ix = document.getElementById('coordX');
+    const iy = document.getElementById('coordY');
+    ix.value = '';
+    iy.value = '';
+    ix.focus();
+    setMode('line');
     return;
   }
 
